@@ -26,3 +26,9 @@ CREATE TABLE patients (patient_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(2
 CREATE TABLE doctors (doctor_id INT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(255), specialization VARCHAR(255));
 
 CREATE TABLE appointments (appointment_id INT AUTO_INCREMENT PRIMARY KEY, patient_id INT, doctor_id INT, appointment_date DATE, FOREIGN KEY (patient_id) REFERENCES patients(patient_id), FOREIGN KEY (doctor_id) REFERENCES doctors(doctor_id));
+
+![hos1](https://github.com/ashwanthgp/hospital_mangement/assets/144984536/9d4fab82-78d7-4c40-97af-a3ba871edd03)
+
+
+![hos2](https://github.com/ashwanthgp/hospital_mangement/assets/144984536/4f3810b2-bcf0-408f-874a-3b0e500a1fe5)
+
