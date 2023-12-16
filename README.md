@@ -17,6 +17,10 @@ Steps
 
 pip install mysql-connector-python
 
+create database hospital_management;
+
+use database hospital_management;
+
 2)SQL COMMANDS,
 
 Create a database hospital_management and use the database then execute the following commands to create tables
