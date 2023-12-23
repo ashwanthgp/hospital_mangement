@@ -39,6 +39,7 @@ class Database:
 
     def book_appointment(self, patient_id, doctor_id, appointment_date):
         query = "INSERT INTO appointments (patient_id, doctor_id, appointment_date) VALUES (%s, %s, %s)"
+        #CREATE TABLE appointments ( patient_id INT PRIMARY KEY, doctor_id INT, appointment_date DATE );
         values = (patient_id, doctor_id, appointment_date)
         self.execute_query(query, values)
 
@@ -51,10 +52,10 @@ class Database:
         values = (patient_id,)
         self.execute_query(query, values)
 
-    def get_appointment_details(self, patient_id):
-        query = "SELECT * FROM appointments WHERE patient_id = %s"
-        values = (patient_id,)
-        return self.fetch_data(query, values)
+    def get_appointment_details(self):
+        query = "SELECT * FROM appointments "
+        #values = (patient_id,)
+        return self.fetch_data(query)
 
     def close(self):
         self.cursor.close()
@@ -64,6 +65,7 @@ class HospitalManagementApp:
     def __init__(self, root, db):
         self.root = root
         self.root.title("Hospital Management System")
+        
           # Set the main window size
         self.root.geometry("800x700")
        
@@ -81,7 +83,15 @@ class HospitalManagementApp:
         style.theme_use("alt")
         title_label = ttk.Label(self.root, text="APOLLO HOSPITAL", font=("Helvetica", 24, "bold"), foreground="blue", background="lightgray")
         title_label.pack(pady=20)
+        
+        
+        '''self.view_appointments_window = tk.Toplevel(root)
+        self.view_appointments_window.title("View Appointments")
 
+        self.patient_id_label = ttk.Label(self.view_appointments_window, text="Patient ID:")
+        self.patient_id_entry = ttk.Entry(self.view_appointments_window)
+        self.patient_id_label.pack()
+        self.patient_id_entry.pack()'''
 
         self.db = db  # Initialize the database connection
        
@@ -109,6 +119,7 @@ class HospitalManagementApp:
         self.gui_frame = ttk.Frame(self.root, width=300, height=200)
 
         # Initialize buttons without displaying them
+        
         self.register_button = ttk.Button(self.gui_frame, text="Register Patient", command=self.register_patient)
         self.book_appointment_button = ttk.Button(self.gui_frame, text="Book Appointment", command=self.book_appointment)
         self.view_records_button = ttk.Button(self.gui_frame, text="View Patient Records", command=self.view_patient_records)
@@ -116,10 +127,10 @@ class HospitalManagementApp:
         self.view_appointments_button = ttk.Button(self.gui_frame, text="View Appointments", command=self.view_appointments)
 
         # Place buttons at the center of the frame with padding
-        self.register_button.grid(row=0, column=0, padx=200, pady=10)
+        self.register_button.grid(row=0, column=0, padx=10, pady=10)
         self.book_appointment_button.grid(row=0, column=1, padx=10, pady=10)
-        self.view_records_button.grid(row=0, column=2, padx=200, pady=10)
-        self.delete_records_button.grid(row=1, column=0, padx=200, pady=10)
+        self.view_records_button.grid(row=0, column=2, padx=10, pady=10)
+        self.delete_records_button.grid(row=1, column=0, padx=10, pady=10)
         self.view_appointments_button.grid(row=1, column=1, padx=10, pady=10)
 
 
@@ -193,6 +204,12 @@ class HospitalManagementApp:
         registration_window = Toplevel(self.root)
         registration_window.title("Register Patient")
 
+        background_image = Image.open("h1.png")  # Replace with your image file
+        background_photo = ImageTk.PhotoImage(background_image)
+        background_label = Label(registration_window, image=background_photo)
+        background_label.place(relwidth=1, relheight=1)
+        background_label.image = background_photo 
+
         # Create and place Entry widgets for patient information
         name_label = Label(registration_window, text="Name:")
         name_entry = Entry(registration_window)
@@ -236,6 +253,12 @@ class HospitalManagementApp:
         appointment_window = Toplevel(self.root)
         appointment_window.title("Book Appointment")
 
+        background_image = Image.open("h1.png")  # Replace with your image file
+        background_photo = ImageTk.PhotoImage(background_image)
+        background_label = Label(appointment_window, image=background_photo)
+        background_label.place(relwidth=1, relheight=1)
+        background_label.image = background_photo 
+
         # Create and place Entry widgets for appointment details
         patient_id_label = Label(appointment_window, text="Patient ID:")
         patient_id_entry = Entry(appointment_window)
@@ -269,31 +292,58 @@ class HospitalManagementApp:
         pass
 
     def view_patient_records(self):
-        # Create a new window for displaying patient records
         view_records_window = tk.Toplevel(self.root)
         view_records_window.title("View Patient Records")
 
+        background_image = Image.open("h1.png")  # Replace with your image file
+        background_photo = ImageTk.PhotoImage(background_image)
+        background_label = Label(view_records_window, image=background_photo)
+        background_label.place(relwidth=1, relheight=1)
+        background_label.image = background_photo
+
         # Create a Treeview widget to display records
-        tree = ttk.Treeview(view_records_window, columns=("Name", "Date of Birth", "Contact", "Medical History"))
-        tree.heading("#1", text="Name")
-        tree.heading("#2", text="Date of Birth")
-        tree.heading("#3", text="Contact")
-        tree.heading("#4", text="Medical History")
-        
+        tree = ttk.Treeview(view_records_window, columns=("Patient ID","Name", "Date of Birth", "Contact", "Medical History"))
+        tree.heading("#1", text="Patient ID",anchor="w")
+        tree.heading("#2", text="Name", anchor="w")
+        tree.heading("#3", text="Date of Birth", anchor="w")
+        tree.heading("#4", text="Contact", anchor="w")
+        tree.heading("#5", text="Medical History", anchor="w")
+
+        # Set column widths explicitly
+        tree.column("#0", width=0,stretch=tk.NO)  # Hide the default first column
+        tree.column("#1", width=150)
+        tree.column("#2", width=150)
+        tree.column("#3", width=150)
+        tree.column("#4", width=200) 
+        tree.column("#5", width=200) # Adjust the width as needed
+
+        # Set column anchor to 'w' (west) to align text to the left
+        for col in ("#1", "#2", "#3", "#4","#5"):
+            tree.heading(col, anchor="w")
+
         # Fetch patient records from the database
         records = self.db.get_patient_records()
 
         # Insert patient records into the Treeview
         for record in records:
-            tree.insert("", "end", values=record)
-
-        #tree.configure(bg='blue')
+            # Insert values into the Treeview, setting the 'values' parameter explicitly
+            tree.insert("", "end", values=(record[0],record[1], record[2], record[3],record[4]))
 
         tree.pack()
+
+
+
     def delete_patient_records(self):
         # Create a new window for deleting patient records
         delete_records_window = Toplevel(self.root)
         delete_records_window.title("Delete Patient Records")
+
+        background_image = Image.open("h1.png")  # Replace with your image file
+        background_photo = ImageTk.PhotoImage(background_image)
+        background_label = Label(delete_records_window, image=background_photo)
+        background_label.place(relwidth=1, relheight=1)
+        background_label.image = background_photo 
+
 
         # Create and place Entry widgets for patient ID
         patient_id_label = Label(delete_records_window, text="Patient ID:")
@@ -316,35 +366,42 @@ class HospitalManagementApp:
 
     def view_appointments(self):
         # Create a new window for viewing appointments
-        view_appointments_window = Toplevel(self.root)
+        view_appointments_window = tk.Toplevel(self.root)
         view_appointments_window.title("View Appointments")
 
-        # Create and place Entry widgets for patient ID
-        patient_id_label = Label(view_appointments_window, text="Patient ID:")
-        patient_id_entry = Entry(view_appointments_window)
-        patient_id_label.pack()
-        patient_id_entry.pack()
+        background_image = Image.open("h1.png")  # Replace with your image file
+        background_photo = ImageTk.PhotoImage(background_image)
+        background_label = Label(view_appointments_window, image=background_photo)
+        background_label.place(relwidth=1, relheight=1)
+        background_label.image = background_photo
 
-        def view_appointment_details():
-            # Get the patient ID to view appointments
-            patient_id = patient_id_entry.get()
+        # Create a Treeview widget to display appointments
+        tree = ttk.Treeview(view_appointments_window, columns=("Patient ID", "Doctor ID", "Appointment Date"))
+        tree.heading("#1", text="Patient ID", anchor="w")
+        tree.heading("#2", text="Doctor ID", anchor="w")
+        tree.heading("#3", text="Appointment Date", anchor="w")
 
-            # Fetch and display appointment details from the database
-            appointments = self.db.get_appointment_details(patient_id)
+        tree.column("#0", width=0,stretch=tk.NO)  # Hide the default first column
+        tree.column("#1", width=150)
+        tree.column("#2", width=150)
+        tree.column("#3", width=150)
 
-            # Create a Treeview widget to display appointments
-            tree = ttk.Treeview(view_appointments_window, columns=("Doctor ID", "Appointment Date"))
-            tree.heading("#1", text="Doctor ID")
-            tree.heading("#2", text="Appointment Date")
 
-            # Insert appointment records into the Treeview
-            for record in appointments:
-                tree.insert("", "end", values=record)
+        # Set column anchor to 'w' (west) to align text to the left
+        for col in ("#1", "#2", "#3"):
+            tree.heading(col, anchor="w")
 
-            tree.pack()
+        # Fetch appointment details from the database
+        appointments = self.db.get_appointment_details()
 
-        view_button = Button(view_appointments_window, text="View Appointments", command=view_appointment_details)
-        view_button.pack()
+        # Insert appointment records into the Treeview
+        for appointment in appointments:
+            # Insert values into the Treeview, setting the 'values' parameter explicitly
+            tree.insert("", "end", values=(appointment[0], appointment[1], appointment[2]))
+
+        tree.pack()
+
+
 
 
 if __name__ == "__main__":
